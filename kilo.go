@@ -24,6 +24,10 @@ func main() {
 			fmt.Println("Error")
 			os.Exit(1)
 		}
+
+		if string(c) == "q" {
+			break
+		}
 	}
 
 	os.Exit(0)
