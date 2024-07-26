@@ -13,18 +13,18 @@ func main() {
 
 		bytesRead, err := os.Stdin.Read(c)
 		if bytesRead != 1 {
-			os.Exit(0)
+			break
 		}
 
 		if err != nil {
 			if err == io.EOF {
-				os.Exit(0)
+				break
 			}
 
 			fmt.Println("Error")
 			os.Exit(1)
 		}
-
-		fmt.Printf("%v", (string(c)))
 	}
+
+	os.Exit(0)
 }
