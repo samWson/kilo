@@ -34,6 +34,16 @@ program is compiled on e.g. `unix.TCGETS` is not defined on macOS.
 // ones successfully compile. Documentation seems non-existant.
 TIOCGETA
 TIOCSETA
+
+// Use these constants for GET and SET operations on a Termios e.g.
+// GETTING
+termios, err := IoctlGetTermios(unix.Stdin, unix.TIOCGETA)
+
+// edit termios state
+
+// SETTING
+IoctlSetTermios(unix.Stdin, unix.TIOCSETA, termios)
+
 ```
 
 https://stackoverflow.com/questions/69693105/golang-unix-tcgets-equivalent-on-mac
