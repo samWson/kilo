@@ -9,7 +9,7 @@ import (
 )
 
 func enableRawMode() {
-	termios, err := unix.IoctlGetTermios(unix.Stdin, unix.TIOCSETA)
+	termios, err := unix.IoctlGetTermios(unix.Stdin, unix.TIOCGETA)
 	if err != nil {
 		fmt.Println("Error")
 		os.Exit(1)
@@ -22,7 +22,6 @@ func enableRawMode() {
 		fmt.Println("Error: failed to set raw mode")
 		os.Exit(1)
 	}
-
 }
 
 func main() {
@@ -33,7 +32,6 @@ func main() {
 
 		bytesRead, err := os.Stdin.Read(c)
 		if bytesRead != 1 {
-			fmt.Println("Stdin bytesRead 0")
 			break
 		}
 
