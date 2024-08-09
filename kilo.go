@@ -8,24 +8,34 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func enableRawMode() {
+type rawModeError string
+
+func (r rawModeError) Error() string {
+	return string(r)
+}
+
+func enableRawMode() error {
 	termios, err := unix.IoctlGetTermios(unix.Stdin, unix.TIOCGETA)
 	if err != nil {
-		fmt.Println("Error")
-		os.Exit(1)
+		return rawModeError("Failed to GET TERMIOS for raw mode")
 	}
 
 	termios.Lflag = termios.Lflag &^ unix.ECHO
 
 	err = unix.IoctlSetTermios(unix.Stdin, unix.TIOCSETA, termios)
 	if err != nil {
-		fmt.Println("Error: failed to set raw mode")
-		os.Exit(1)
+		return rawModeError("Failed to SET TERMIOS for raw mode")
 	}
+
+	return nil
 }
 
 func main() {
-	enableRawMode()
+	err := enableRawMode()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	for {
 		c := make([]byte, 1)
