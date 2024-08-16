@@ -26,6 +26,7 @@ func enableRawMode() error {
 	originalTermios = termios
 
 	termios.Iflag = termios.Iflag &^ (unix.ICRNL | unix.IXON)
+	termios.Oflag = termios.Oflag &^ unix.OPOST
 	termios.Lflag = termios.Lflag &^ (unix.ECHO | unix.ICANON | unix.IEXTEN | unix.ISIG)
 
 	err = unix.IoctlSetTermios(unix.Stdin, unix.TIOCSETA, termios)
@@ -71,9 +72,9 @@ func main() {
 		}
 
 		if unicode.IsControl(rune(c[0])) {
-			fmt.Printf("%d\n", c[0])
+			fmt.Printf("%d\r\n", c[0])
 		} else {
-			fmt.Printf("%d ('%c')\n", c[0], c[0])
+			fmt.Printf("%d ('%c')\r\n", c[0], c[0])
 		}
 	}
 
