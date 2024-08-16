@@ -10,6 +10,8 @@ import (
 
 type rawModeError string
 
+var originalTermios *unix.Termios
+
 func (r rawModeError) Error() string {
 	return string(r)
 }
@@ -19,6 +21,8 @@ func enableRawMode() error {
 	if err != nil {
 		return rawModeError("Failed to GET TERMIOS for raw mode")
 	}
+
+	originalTermios = termios
 
 	termios.Lflag = termios.Lflag &^ unix.ECHO
 
@@ -30,12 +34,18 @@ func enableRawMode() error {
 	return nil
 }
 
+func disableRawMode() {
+	unix.IoctlSetTermios(unix.Stdin, unix.TIOCSETA, originalTermios)
+}
+
 func main() {
 	err := enableRawMode()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	defer disableRawMode()
 
 	for {
 		c := make([]byte, 1)
