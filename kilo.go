@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"unicode"
 
 	"golang.org/x/sys/unix"
 )
@@ -66,6 +67,12 @@ func main() {
 
 		if string(c) == "q" {
 			break
+		}
+
+		if unicode.IsControl(rune(c[0])) {
+			fmt.Printf("%d\n", c[0])
+		} else {
+			fmt.Printf("%d ('%c')\n", c[0], c[0])
 		}
 	}
 
