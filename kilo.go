@@ -25,6 +25,7 @@ func enableRawMode() error {
 
 	originalTermios = termios
 
+	termios.Iflag = termios.Iflag &^ unix.IXON
 	termios.Lflag = termios.Lflag &^ (unix.ECHO | unix.ICANON | unix.ISIG)
 
 	err = unix.IoctlSetTermios(unix.Stdin, unix.TIOCSETA, termios)
