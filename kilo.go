@@ -43,6 +43,31 @@ func disableRawMode() {
 	unix.IoctlSetTermios(unix.Stdin, unix.TIOCSETA, originalTermios)
 }
 
+type editorReadError string
+
+func (e editorReadError) Error() string {
+	return string(e)
+}
+
+func editorReadKey() ([]byte, error) {
+	c := make([]byte, 1)
+
+	bytesRead, err := os.Stdin.Read(c)
+	if bytesRead != 1 {
+		return nil, editorReadError("Failed to read 1 byte")
+	}
+
+	if err != nil {
+		if err == io.EOF {
+			return nil, editorReadError("End of file")
+		}
+
+		return nil, editorReadError("Error reading key press")
+	}
+
+	return c, nil
+}
+
 func isCtrlKey(c []byte, key rune) bool {
 	return bytes.Runes(c)[0] == (key & 0x1f)
 }
@@ -57,19 +82,10 @@ func main() {
 	defer disableRawMode()
 
 	for {
-		c := make([]byte, 1)
-
-		bytesRead, err := os.Stdin.Read(c)
-		if bytesRead != 1 {
-			break
-		}
+		c, err := editorReadKey()
 
 		if err != nil {
-			if err == io.EOF {
-				break
-			}
-
-			fmt.Println("Error")
+			fmt.Println(err)
 			os.Exit(1)
 		}
 
