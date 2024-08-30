@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -42,6 +43,10 @@ func disableRawMode() {
 	unix.IoctlSetTermios(unix.Stdin, unix.TIOCSETA, originalTermios)
 }
 
+func isCtrlKey(c []byte, key rune) bool {
+	return bytes.Runes(c)[0] == (key & 0x1f)
+}
+
 func main() {
 	err := enableRawMode()
 	if err != nil {
@@ -68,7 +73,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		if string(c) == "q" {
+		if isCtrlKey(c, 'q') {
 			break
 		}
 
